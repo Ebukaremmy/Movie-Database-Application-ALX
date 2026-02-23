@@ -1,20 +1,41 @@
-import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom'; // Import Routing components
+import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom'; 
 import SearchBar from './components/SearchBar';
 import MovieCard from './components/MovieCard';
-import MovieDetails from './components/MovieDetails'; // We'll use the file you created
+import MovieDetails from './components/MovieDetails';
 
 function App() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]); 
   const [loading, setLoading] = useState(false); 
+  const [showFavorites, setShowFavorites] = useState(false); 
+
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem('movie-favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('movie-favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (movie) => {
+    setFavorites((prev) => {
+      const isFav = prev.find((fav) => fav.imdbID === movie.imdbID);
+      if (isFav) {
+        return prev.filter((fav) => fav.imdbID !== movie.imdbID);
+      } else {
+        return [...prev, movie];
+      }
+    });
+  };
 
   const handleSearch = async () => {
-    if (!query) {
-      alert("Please enter a movie name");
-      return;
-    }
+    if (!query) return;
+    
     setLoading(true);
+    setShowFavorites(false); 
+    
     const API_KEY = "1875e468"; 
     const url = `https://www.omdbapi.com/?s=${query}&apikey=${API_KEY}`;
 
@@ -25,7 +46,7 @@ function App() {
         setMovies(data.Search);
       } else {
         setMovies([]);
-        alert(data.Error || "No movies found!");
+        // Removed the alert() to keep the UI clean during your demo
       }
     } catch (error) {
       console.error("Error:", error);
@@ -35,31 +56,71 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-700 text-white">
+    <div className="min-h-screen bg-blue-700 text-white pb-20">
       <Routes>
-        {/* Main Search Page Route */}
         <Route path="/" element={
           <div className="flex flex-col items-center p-8">
             <h1 className="text-4xl font-bold mb-8 drop-shadow-md">Movie Finder</h1>
-            <SearchBar query={query} setQuery={setQuery} onSearch={handleSearch} />
+            
+            <div className="flex flex-col items-center gap-4 w-full mb-10">
+              <SearchBar query={query} setQuery={setQuery} onSearch={handleSearch} />
+              
+              <button 
+                onClick={() => setShowFavorites(!showFavorites)}
+                className="bg-yellow-500 hover:bg-yellow-400 text-blue-900 font-bold py-2 px-6 rounded-full transition-all shadow-lg text-sm"
+              >
+                {showFavorites ? "⬅️ Back to Search" : `❤️ View Favorites (${favorites.length})`}
+              </button>
+            </div>
             
             {loading && <p className="mt-10 animate-pulse text-xl font-semibold">Searching...</p>}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-12 w-full max-w-6xl">
-              {movies.map((movie) => (
-                <MovieCard key={movie.imdbID} movie={movie} />
-              ))}
-            </div>
-
-            {!loading && movies.length === 0 && (
-              <p className="mt-10 text-blue-200 italic font-medium">
-                Type a movie title and click search to see results.
-              </p>
+            {showFavorites ? (
+              <div className="w-full max-w-6xl animate-fadeIn">
+                <h2 className="text-2xl font-bold mb-6 border-b-2 border-yellow-500 inline-block">My Favorites ❤️</h2>
+                {favorites.length === 0 ? (
+                  <p className="mt-10 text-blue-200 italic text-center text-lg">Your favorites list is empty.</p>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    {favorites.map((movie) => (
+                      <MovieCard 
+                        key={movie.imdbID} 
+                        movie={movie} 
+                        toggleFavorite={toggleFavorite}
+                        isFavorite={true}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="w-full max-w-6xl animate-fadeIn">
+                {movies.length > 0 ? (
+                  <>
+                    <h2 className="text-2xl font-bold mb-6">Search Results</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full">
+                      {movies.map((movie) => (
+                        <MovieCard 
+                          key={movie.imdbID} 
+                          movie={movie} 
+                          toggleFavorite={toggleFavorite}
+                          isFavorite={favorites.some(fav => fav.imdbID === movie.imdbID)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  !loading && query && (
+                    <p className="mt-10 text-blue-200 italic text-center text-lg">
+                      No movies found for "{query}". Try a different title!
+                    </p>
+                  )
+                )}
+              </div>
             )}
           </div>
         } />
 
-        {/* Dynamic Movie Details Route */}
         <Route path="/movie/:id" element={<MovieDetails />} />
       </Routes>
     </div>
