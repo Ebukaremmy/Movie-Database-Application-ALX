@@ -1,6 +1,13 @@
 import React from 'react';
 
 const SearchBar = ({ query, setQuery, onSearch }) => {
+  // Function to check if the user pressed the "Enter" key
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onSearch();
+    }
+  };
+
   return (
     <div className="flex flex-col items-center w-full max-w-md">
       <input 
@@ -9,6 +16,7 @@ const SearchBar = ({ query, setQuery, onSearch }) => {
         className="w-full p-4 rounded-lg text-black border-none focus:ring-4 focus:ring-yellow-400 outline-none"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown} // This enables the Enter key functionality
       />
       <button 
         onClick={onSearch}
