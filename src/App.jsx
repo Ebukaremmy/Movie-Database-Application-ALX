@@ -10,14 +10,40 @@ function App() {
   const [loading, setLoading] = useState(false); 
   const [showFavorites, setShowFavorites] = useState(false); 
 
+  // Initialize favorites from localStorage
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('movie-favorites');
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Save favorites to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('movie-favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // NEW: Initial Feed - Load popular movies on first visit
+  useEffect(() => {
+    const fetchInitialMovies = async () => {
+      setLoading(true);
+      const API_KEY = "1875e468";
+      // We search for "Marvel" to show high-quality posters on load
+      const url = `https://www.omdbapi.com/?s=Marvel&apikey=${API_KEY}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.Response === "True") {
+          setMovies(data.Search);
+        }
+      } catch (error) {
+        console.error("Error fetching initial movies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialMovies();
+  }, []); // Empty array means this runs only once
 
   const toggleFavorite = (movie) => {
     setFavorites((prev) => {
@@ -46,7 +72,6 @@ function App() {
         setMovies(data.Search);
       } else {
         setMovies([]);
-        // Removed the alert() to keep the UI clean during your demo
       }
     } catch (error) {
       console.error("Error:", error);
@@ -76,7 +101,7 @@ function App() {
             {loading && <p className="mt-10 animate-pulse text-xl font-semibold">Searching...</p>}
 
             {showFavorites ? (
-              <div className="w-full max-w-6xl animate-fadeIn">
+              <div className="w-full max-w-6xl mt-12 animate-fadeIn">
                 <h2 className="text-2xl font-bold mb-6 border-b-2 border-yellow-500 inline-block">My Favorites ❤️</h2>
                 {favorites.length === 0 ? (
                   <p className="mt-10 text-blue-200 italic text-center text-lg">Your favorites list is empty.</p>
@@ -94,10 +119,12 @@ function App() {
                 )}
               </div>
             ) : (
-              <div className="w-full max-w-6xl animate-fadeIn">
+              <div className="w-full max-w-6xl mt-12 animate-fadeIn">
                 {movies.length > 0 ? (
                   <>
-                    <h2 className="text-2xl font-bold mb-6">Search Results</h2>
+                    <h2 className="text-2xl font-bold mb-6">
+                      {query ? `Search Results for "${query}"` : "Featured Movies"}
+                    </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full">
                       {movies.map((movie) => (
                         <MovieCard 
