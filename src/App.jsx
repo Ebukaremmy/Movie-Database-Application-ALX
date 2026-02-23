@@ -106,7 +106,8 @@ function App() {
                 {favorites.length === 0 ? (
                   <p className="mt-10 text-blue-200 italic text-center text-lg">Your favorites list is empty.</p>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  /* UPDATED GRID FOR FAVORITES */
+                  <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-8 w-full">
                     {favorites.map((movie) => (
                       <MovieCard 
                         key={movie.imdbID} 
@@ -125,7 +126,8 @@ function App() {
                     <h2 className="text-2xl font-bold mb-6">
                       {query ? `Search Results for "${query}"` : "Featured Movies"}
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 w-full">
+                    {/* UPDATED GRID FOR SEARCH RESULTS */}
+                    <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-8 w-full">
                       {movies.map((movie) => (
                         <MovieCard 
                           key={movie.imdbID} 
