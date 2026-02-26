@@ -23,7 +23,7 @@ A sleek, responsive web application that allows users to explore a vast universe
 * **Vite:** For a lightning-fast development environment and optimized production builds.
 
 ## 📸 Video Walkthrough
-*(Insert your Loom video link here once recorded)*
+*(https://www.loom.com/share/2b1fc07380fc4d8ba7faf94bcf1ba03e)*
 
 ## ⚙️ Local Setup
 
@@ -43,4 +43,4 @@ A sleek, responsive web application that allows users to explore a vast universe
     ```bash
     npm run build
     ```
-Created with passion by Ebuka Remmy.
+Created with passion by Ebuka Remmy Ikegwuonu.
