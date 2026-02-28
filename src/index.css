@@ -1,29 +1,17 @@
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* --- UI/UX Polish: Smooth Transitions --- */
-
-/* This creates the 'Fade In' effect for your movie cards */
+/* Main background fade-in effect */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Apply this class to your containers in App.jsx */
+/* Class to trigger the animation */
 .animate-fadeIn {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* Makes hover effects and layout changes smooth */
+/* Smooth transitions for buttons and cards */
 .transform, .transition-all {
   transition: all 0.3s ease-in-out;
 }

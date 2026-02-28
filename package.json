@@ -1,8 +1,9 @@
 {
   "name": "movie-database-application-alx",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "A responsive React-based movie discovery platform utilizing the OMDb API for real-time data fetching and localized persistent storage.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

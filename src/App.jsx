@@ -10,23 +10,22 @@ function App() {
   const [loading, setLoading] = useState(false); 
   const [showFavorites, setShowFavorites] = useState(false); 
 
-  // Initialize favorites from localStorage
+  // Retrieves saved user favorites from local storage on initial component mount
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('movie-favorites');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Save favorites to localStorage whenever they change
+  // Persists the favorites list to local storage whenever the state is updated
   useEffect(() => {
     localStorage.setItem('movie-favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // NEW: Initial Feed - Load popular movies on first visit
+  // Fetches a default collection of movies to populate the feed for new visitors
   useEffect(() => {
     const fetchInitialMovies = async () => {
       setLoading(true);
       const API_KEY = "1875e468";
-      // We search for "Marvel" to show high-quality posters on load
       const url = `https://www.omdbapi.com/?s=Marvel&apikey=${API_KEY}`;
 
       try {
@@ -43,8 +42,9 @@ function App() {
     };
 
     fetchInitialMovies();
-  }, []); // Empty array means this runs only once
+  }, []);
 
+  // Adds or removes a movie from the user's favorites list based on its current status
   const toggleFavorite = (movie) => {
     setFavorites((prev) => {
       const isFav = prev.find((fav) => fav.imdbID === movie.imdbID);
@@ -56,6 +56,7 @@ function App() {
     });
   };
 
+  // Handles movie searches by querying the database and updating the UI with results
   const handleSearch = async () => {
     if (!query) return;
     
@@ -100,13 +101,13 @@ function App() {
             
             {loading && <p className="mt-10 animate-pulse text-xl font-semibold">Searching...</p>}
 
+            {/* Conditional rendering for the Favorites section */}
             {showFavorites ? (
               <div className="w-full max-w-6xl mt-12 animate-fadeIn">
                 <h2 className="text-2xl font-bold mb-6 border-b-2 border-yellow-500 inline-block">My Favorites ❤️</h2>
                 {favorites.length === 0 ? (
                   <p className="mt-10 text-blue-200 italic text-center text-lg">Your favorites list is empty.</p>
                 ) : (
-                  /* UPDATED GRID FOR FAVORITES */
                   <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-8 w-full">
                     {favorites.map((movie) => (
                       <MovieCard 
@@ -120,13 +121,13 @@ function App() {
                 )}
               </div>
             ) : (
+              /* Rendering for the main Movie Feed and Search Results */
               <div className="w-full max-w-6xl mt-12 animate-fadeIn">
                 {movies.length > 0 ? (
                   <>
                     <h2 className="text-2xl font-bold mb-6">
                       {query ? `Search Results for "${query}"` : "Featured Movies"}
                     </h2>
-                    {/* UPDATED GRID FOR SEARCH RESULTS */}
                     <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-8 w-full">
                       {movies.map((movie) => (
                         <MovieCard 
@@ -150,6 +151,7 @@ function App() {
           </div>
         } />
 
+        {/* Dynamic route for accessing specific movie details */}
         <Route path="/movie/:id" element={<MovieDetails />} />
       </Routes>
     </div>
